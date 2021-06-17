@@ -6,7 +6,32 @@
  */
 
 import Env from "@ioc:Adonis/Core/Env";
-import { RedisConfig } from "@ioc:Adonis/Addons/Redis";
+import { RedisConfig, RedisConnectionConfig } from "@ioc:Adonis/Addons/Redis";
+
+import Url from "url-parse";
+import Application from "@ioc:Adonis/Core/Application";
+
+const REDIS_TLS_URL = new Url(Env.get("REDIS_TLS_URL"));
+
+console.log(REDIS_TLS_URL);
+
+const devRedisConfig: RedisConnectionConfig = {
+  host: Env.get("REDIS_HOST"),
+  port: Env.get("REDIS_PORT"),
+  password: Env.get("REDIS_PASSWORD", ""),
+  db: 0,
+  keyPrefix: "",
+  healthCheck: true,
+};
+
+const prodRedisConfig: RedisConnectionConfig = {
+  host: REDIS_TLS_URL.hostname as string,
+  port: REDIS_TLS_URL.port as number,
+  password: REDIS_TLS_URL.password as string,
+  db: 0,
+  keyPrefix: "",
+  healthCheck: true,
+};
 
 /*
 |--------------------------------------------------------------------------
@@ -35,14 +60,7 @@ const redisConfig: RedisConfig = {
     | redis driver.
     |
     */
-    local: {
-      host: Env.get("REDIS_HOST"),
-      port: Env.get("REDIS_PORT"),
-      password: Env.get("REDIS_PASSWORD", ""),
-      db: 0,
-      keyPrefix: "",
-      healthCheck: true,
-    },
+    local: Application.inDev ? devRedisConfig : prodRedisConfig,
   },
 };
 

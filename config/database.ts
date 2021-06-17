@@ -7,6 +7,29 @@
 
 import Env from "@ioc:Adonis/Core/Env";
 import { DatabaseConfig } from "@ioc:Adonis/Lucid/Database";
+import Url from "url-parse";
+import Application from "@ioc:Adonis/Core/Application";
+
+const DATABASE_URL = new Url(Env.get("DATABASE_URL"));
+
+const prodConnection = {
+  host: DATABASE_URL.hostname as string,
+  port: DATABASE_URL.port as number,
+  user: DATABASE_URL.username as string,
+  password: DATABASE_URL.password as string,
+  database: DATABASE_URL.pathname.substr(1) as string,
+  ssl: {
+    rejectUnauthorized: false,
+  },
+};
+
+const devConnection = {
+  host: Env.get("PG_HOST"),
+  port: Env.get("PG_PORT"),
+  user: Env.get("PG_USER"),
+  password: Env.get("PG_PASSWORD", ""),
+  database: Env.get("PG_DB_NAME"),
+};
 
 const databaseConfig: DatabaseConfig = {
   /*
@@ -35,18 +58,12 @@ const databaseConfig: DatabaseConfig = {
     */
     pg: {
       client: "pg",
-      connection: {
-        host: Env.get("PG_HOST"),
-        port: Env.get("PG_PORT"),
-        user: Env.get("PG_USER"),
-        password: Env.get("PG_PASSWORD", ""),
-        database: Env.get("PG_DB_NAME"),
-      },
+      connection: Application.inDev ? devConnection : prodConnection,
       migrations: {
         naturalSort: true,
       },
       healthCheck: true,
-      debug: false,
+      debug: true,
     },
   },
 };
