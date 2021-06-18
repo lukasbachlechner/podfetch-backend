@@ -18,33 +18,42 @@
 |
 */
 
-import Route from "@ioc:Adonis/Core/Route";
-import HealthCheck from "@ioc:Adonis/Core/HealthCheck";
-import PodcastIndexClient from "podcastdx-client";
-import Env from "@ioc:Adonis/Core/Env";
-import User from "App/Models/User";
+import Route from '@ioc:Adonis/Core/Route';
+import HealthCheck from '@ioc:Adonis/Core/HealthCheck';
+import PodcastService from '../services/PodcastService';
+import CacheService from '../services/CacheService';
+import Hash from '@ioc:Adonis/Core/Hash';
+import Env from '@ioc:Adonis/Core/Env';
 
-Route.get("/health", async ({ response }) => {
-  const report = await HealthCheck.getReport();
-  return report.healthy ? response.ok(report) : response.badRequest(report);
-});
-
-Route.post("/register", "AuthController.register");
-Route.post("/login", "AuthController.login");
-
-console.log(Env.get("PI_API_SECRET"));
-
-const podcastClient = new PodcastIndexClient({
-  key: Env.get("PI_API_KEY") as string,
-  secret: Env.get("PI_API_SECRET") as string,
-  disableAnalytics: true,
-});
-
-Route.get("/podcasts", async () => {
-  const users = await User.all();
-  const { feeds } = await podcastClient.raw("/podcasts/trending", {
-    lang: "de-AT",
-    cat: "comedy",
+Route.group(() => {
+  Route.get('/health', async ({ response }) => {
+    const report = await HealthCheck.getReport();
+    return report.healthy ? response.ok(report) : response.badRequest(report);
   });
-  return { feeds, users };
-});
+
+  Route.post('/register', 'AuthController.register');
+  Route.post('/login', 'AuthController.login');
+
+  Route.get('/podcasts/stats', 'PodcastsController.getStats');
+  Route.get('/podcasts/trending', 'PodcastsController.getTrending');
+
+  Route.put('/cache/:cacheToken', async ({ request, response }) => {
+    const { cacheToken } = request.params();
+
+    if (cacheToken !== Env.get('CACHE_TOKEN')) {
+      return response.badRequest();
+    }
+
+    console.log(await Hash.make('asdkfjlasdfjk'));
+
+    const statsPromise = PodcastService.stats();
+    const categoriesPromise = PodcastService.categories();
+
+    const [{ stats }, { feeds: categories }] = await Promise.all([statsPromise, categoriesPromise]);
+
+    await CacheService.setJSON('stats', stats);
+    await CacheService.setJSON('categories', categories);
+
+    return response.noContent();
+  });
+}).prefix('v1');

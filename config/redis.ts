@@ -5,20 +5,20 @@
  * file.
  */
 
-import Env from "@ioc:Adonis/Core/Env";
-import { RedisConfig, RedisConnectionConfig } from "@ioc:Adonis/Addons/Redis";
+import Env from '@ioc:Adonis/Core/Env';
+import { RedisConfig, RedisConnectionConfig } from '@ioc:Adonis/Addons/Redis';
 
-import Url from "url-parse";
-import Application from "@ioc:Adonis/Core/Application";
+import Url from 'url-parse';
+import Application from '@ioc:Adonis/Core/Application';
 
-const REDIS_URL = new Url(Env.get("REDIS_URL"));
+const REDIS_URL = new Url(Env.get('REDIS_URL'));
 
 const devRedisConfig: RedisConnectionConfig = {
-  host: Env.get("REDIS_HOST"),
-  port: Env.get("REDIS_PORT"),
-  password: Env.get("REDIS_PASSWORD", ""),
+  host: Env.get('REDIS_HOST'),
+  port: Env.get('REDIS_PORT'),
+  password: Env.get('REDIS_PASSWORD', ''),
   db: 0,
-  keyPrefix: "",
+  keyPrefix: '',
   healthCheck: true,
 };
 
@@ -27,7 +27,7 @@ const prodRedisConfig: RedisConnectionConfig = {
   port: REDIS_URL.port as number,
   password: REDIS_URL.password as string,
   db: 0,
-  keyPrefix: "",
+  keyPrefix: '',
   healthCheck: true,
 };
 
@@ -45,7 +45,7 @@ const prodRedisConfig: RedisConnectionConfig = {
 | Make sure to check `contracts/redis.ts` file for defining extra connections
 */
 const redisConfig: RedisConfig = {
-  connection: Env.get("REDIS_CONNECTION"),
+  connection: Env.get('REDIS_CONNECTION'),
 
   connections: {
     /*
