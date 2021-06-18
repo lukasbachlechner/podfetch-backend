@@ -40,7 +40,7 @@ const podcastClient = new PodcastIndexClient({
   disableAnalytics: true,
 });
 
-Route.get("/podcasts", async ({ response }) => {
+Route.get("/podcasts", async () => {
   const users = await User.all();
   const { feeds } = await podcastClient.raw("/podcasts/trending", {
     lang: "de-AT",
