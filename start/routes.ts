@@ -20,6 +20,9 @@
 
 import Route from "@ioc:Adonis/Core/Route";
 import HealthCheck from "@ioc:Adonis/Core/HealthCheck";
+import PodcastIndexClient from "podcastdx-client";
+import Env from "@ioc:Adonis/Core/Env";
+import User from "App/Models/User";
 
 Route.get("/health", async ({ response }) => {
   const report = await HealthCheck.getReport();
@@ -28,3 +31,20 @@ Route.get("/health", async ({ response }) => {
 
 Route.post("/register", "AuthController.register");
 Route.post("/login", "AuthController.login");
+
+console.log(Env.get("PI_API_SECRET"));
+
+const podcastClient = new PodcastIndexClient({
+  key: Env.get("PI_API_KEY") as string,
+  secret: Env.get("PI_API_SECRET") as string,
+  disableAnalytics: true,
+});
+
+Route.get("/podcasts", async ({ response }) => {
+  const users = await User.all();
+  const { feeds } = await podcastClient.raw("/podcasts/trending", {
+    lang: "de-AT",
+    cat: "comedy",
+  });
+  return { feeds, users };
+});

@@ -24,6 +24,7 @@
     "luxon": "^1.27.0",
     "pg": "^8.6.0",
     "phc-argon2": "^1.1.1",
+    "podcastdx-client": "^5.0.0",
     "proxy-addr": "^2.0.7",
     "reflect-metadata": "^0.1.13",
     "source-map-support": "^0.5.19",
