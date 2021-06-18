@@ -11,7 +11,7 @@ import { RedisConfig, RedisConnectionConfig } from "@ioc:Adonis/Addons/Redis";
 import Url from "url-parse";
 import Application from "@ioc:Adonis/Core/Application";
 
-const REDIS_TLS_URL = new Url(Env.get("REDIS_TLS_URL"));
+const REDIS_URL = new Url(Env.get("REDIS_TLS_URL"));
 
 const devRedisConfig: RedisConnectionConfig = {
   host: Env.get("REDIS_HOST"),
@@ -23,9 +23,9 @@ const devRedisConfig: RedisConnectionConfig = {
 };
 
 const prodRedisConfig: RedisConnectionConfig = {
-  host: REDIS_TLS_URL.hostname as string,
-  port: REDIS_TLS_URL.port as number,
-  password: REDIS_TLS_URL.password as string,
+  host: REDIS_URL.hostname as string,
+  port: REDIS_URL.port as number,
+  password: REDIS_URL.password as string,
   db: 0,
   keyPrefix: "",
   healthCheck: true,
