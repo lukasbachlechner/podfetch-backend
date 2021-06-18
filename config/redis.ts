@@ -13,8 +13,6 @@ import Application from "@ioc:Adonis/Core/Application";
 
 const REDIS_TLS_URL = new Url(Env.get("REDIS_TLS_URL"));
 
-console.log(REDIS_TLS_URL);
-
 const devRedisConfig: RedisConnectionConfig = {
   host: Env.get("REDIS_HOST"),
   port: Env.get("REDIS_PORT"),
