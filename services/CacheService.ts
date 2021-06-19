@@ -8,6 +8,7 @@ export default class CacheService {
   }
 
   public static async setJSON(key: string, value: any, ttl?: string) {
+    value.cacheUpdatedAt = new Date();
     if (ttl) {
       await Redis.set(key, JSON.stringify(value), 'px', string.toMs(ttl));
     } else {
