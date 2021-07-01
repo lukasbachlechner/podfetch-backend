@@ -20,15 +20,30 @@
 
 import Route from '@ioc:Adonis/Core/Route';
 import HealthCheck from '@ioc:Adonis/Core/HealthCheck';
-import PodcastService from '../services/PodcastService';
-import CacheService from '../services/CacheService';
-import Hash from '@ioc:Adonis/Core/Hash';
+import PodcastService from '../app/Services/PodcastService';
+import CacheService from '../app/Services/CacheService';
 import Env from '@ioc:Adonis/Core/Env';
+import axios from 'axios';
+import sharp from 'sharp';
 
 Route.group(() => {
   Route.get('/health', async ({ response }) => {
     const report = await HealthCheck.getReport();
     return report.healthy ? response.ok(report) : response.badRequest(report);
+  });
+
+  Route.get('/images/:url', async ({ response }) => {
+    const imageUrl =
+      'https://images.podigee-cdn.net/1400x,sWwyu2C0ZAmZMGDQAHc2_kxlyOhlUB_z49hE_RGQ8PG0=/https://cdn.podigee.com/uploads/u10314/05b8d202-1897-46c7-8566-fb3148dc9cc9.jpg';
+    const { data } = await axios.get(imageUrl, {
+      responseType: 'arraybuffer',
+    });
+
+    const sharpOutput: Buffer = await sharp(data).resize({ width: 48 }).webp().toBuffer();
+
+    response.header('Content-Type', 'image/webp');
+    return sharpOutput;
+    // return { output: 'data:image/webp;base64,' + sharpOutput.toString('base64') };
   });
 
   Route.post('/register', 'AuthController.register');
@@ -43,8 +58,6 @@ Route.group(() => {
     if (cacheToken !== Env.get('CACHE_TOKEN')) {
       return response.badRequest();
     }
-
-    console.log(await Hash.make('asdkfjlasdfjk'));
 
     const statsPromise = PodcastService.stats();
     const categoriesPromise = PodcastService.categories();

@@ -1,15 +1,7 @@
 import PodcastIndexClient from 'podcastdx-client';
 import Env from '@ioc:Adonis/Core/Env';
-import { ApiResponse, PIApiPodcast } from 'podcastdx-client/dist/src/types';
-
-export interface Podcasts {
-  status: ApiResponse.Status;
-  feeds: PIApiPodcast[];
-  description: string;
-  count: number;
-  since: number;
-  max: number | undefined;
-}
+import { ApiResponse } from 'podcastdx-client/src/types';
+import { TrendingPodcasts } from '../../types';
 
 class PodcastService extends PodcastIndexClient {
   constructor() {
@@ -20,7 +12,7 @@ class PodcastService extends PodcastIndexClient {
     });
   }
 
-  public trending(qs?: ApiResponse.AnyQueryOptions): Promise<Podcasts> {
+  public trending(qs?: ApiResponse.AnyQueryOptions): Promise<TrendingPodcasts> {
     return super.raw('/podcasts/trending', qs);
   }
 }

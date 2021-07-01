@@ -6,6 +6,7 @@
  */
 
 import { CorsConfig } from '@ioc:Adonis/Core/Cors';
+import Env from '@ioc:Adonis/Core/Env';
 
 const corsConfig: CorsConfig = {
   /*
@@ -44,7 +45,7 @@ const corsConfig: CorsConfig = {
   |                     one of the above values.
   |
   */
-  origin: ['http://podfetch.local', 'https://podfetch.app'],
+  origin: Env.get('NODE_ENV') === 'production' ? ['https://podfetch.app', 'https://listen.podfetch.app'] : '*',
 
   /*
   |--------------------------------------------------------------------------
