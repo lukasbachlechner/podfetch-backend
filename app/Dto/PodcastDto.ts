@@ -23,19 +23,6 @@ export default class PodcastDto extends Dto {
     this.author = podcast.author;
     this.image = podcast.image;
     this.language = podcast.language;
-    this.mapCategories(podcast.categories);
-  }
-
-  private mapCategories(categories: any) {
-    const mappedCategories: CategoryDto[] = [];
-    for (const key in categories) {
-      const category = new CategoryDto({
-        id: key,
-        title: categories[key],
-      });
-      mappedCategories.push(category);
-    }
-
-    this.categories = mappedCategories;
+    this.categories = CategoryDto.fromDirtyCategories(podcast.categories);
   }
 }

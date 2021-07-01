@@ -25,6 +25,8 @@ import CacheService from '../app/Services/CacheService';
 import Env from '@ioc:Adonis/Core/Env';
 import axios from 'axios';
 import sharp from 'sharp';
+import Dto from 'App/Dto/Dto';
+import CategoryDto from 'App/Dto/CategoryDto';
 
 Route.group(() => {
   Route.get('/health', async ({ response }) => {
@@ -49,7 +51,9 @@ Route.group(() => {
   Route.post('/register', 'AuthController.register');
   Route.post('/login', 'AuthController.login');
 
-  Route.get('/podcasts/stats', 'PodcastsController.getStats');
+  Route.get('/stats', 'PodcastsController.getStats');
+  Route.get('/categories', 'PodcastsController.getCategories');
+
   Route.get('/podcasts/trending', 'PodcastsController.getTrending');
 
   Route.put('/cache/:cacheToken', async ({ request, response }) => {
@@ -65,7 +69,9 @@ Route.group(() => {
     const [{ stats }, { feeds: categories }] = await Promise.all([statsPromise, categoriesPromise]);
 
     await CacheService.setJSON('stats', stats);
-    await CacheService.setJSON('categories', categories);
+
+    const categoriesDto = Dto.fromArray(categories, CategoryDto);
+    await CacheService.setJSON('categories', categoriesDto);
 
     return response.noContent();
   });

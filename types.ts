@@ -13,3 +13,7 @@ export interface TrendingPodcasts {
   since: number;
   max: number | undefined;
 }
+
+export type DirtyCategories = {
+  [categoryId: string]: string;
+} | null;
