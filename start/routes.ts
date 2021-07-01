@@ -34,14 +34,17 @@ Route.group(() => {
     return report.healthy ? response.ok(report) : response.badRequest(report);
   });
 
-  Route.get('/images/:url', async ({ response }) => {
-    const imageUrl =
-      'https://images.podigee-cdn.net/1400x,sWwyu2C0ZAmZMGDQAHc2_kxlyOhlUB_z49hE_RGQ8PG0=/https://cdn.podigee.com/uploads/u10314/05b8d202-1897-46c7-8566-fb3148dc9cc9.jpg';
-    const { data } = await axios.get(imageUrl, {
+  Route.get('/images/:size/:url', async ({ request, response }) => {
+    let { url, size } = request.params();
+    url = decodeURIComponent(url);
+    const { data } = await axios.get(url, {
       responseType: 'arraybuffer',
     });
 
-    const sharpOutput: Buffer = await sharp(data).resize({ width: 48 }).webp().toBuffer();
+    const sharpOutput: Buffer = await sharp(data)
+      .resize({ width: parseInt(size) })
+      .webp()
+      .toBuffer();
 
     response.header('Content-Type', 'image/webp');
     return sharpOutput;
