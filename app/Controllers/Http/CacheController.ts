@@ -1,7 +1,6 @@
 import Env from '@ioc:Adonis/Core/Env';
 import PodcastService from 'App/Services/PodcastService';
 import CacheService from 'App/Services/CacheService';
-import Dto from 'App/Dto/Dto';
 import CategoryDto from 'App/Dto/CategoryDto';
 
 export default class CacheController {
@@ -24,7 +23,7 @@ export default class CacheController {
 
     await CacheService.setJSON('stats', stats);
 
-    const categoriesDto = Dto.fromArray(categories, CategoryDto);
+    const categoriesDto = CategoryDto.fromArray(categories);
     await CacheService.setJSON('categories', categoriesDto);
 
     return response.noContent();

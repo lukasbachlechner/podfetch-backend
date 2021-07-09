@@ -8,7 +8,7 @@ export default class CategoryDto extends Dto {
   public slug: string;
 
   constructor(category: PIApiCategory) {
-    super();
+    super(category);
     this.id = category.id;
     this.name = category.name;
     this.slug = this.toSlug(category.name);
