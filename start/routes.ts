@@ -20,13 +20,6 @@
 
 import Route from '@ioc:Adonis/Core/Route';
 import HealthCheck from '@ioc:Adonis/Core/HealthCheck';
-import PodcastService from '../app/Services/PodcastService';
-import CacheService from '../app/Services/CacheService';
-import Env from '@ioc:Adonis/Core/Env';
-import axios from 'axios';
-import sharp from 'sharp';
-import Dto from 'App/Dto/Dto';
-import CategoryDto from 'App/Dto/CategoryDto';
 
 Route.group(() => {
   Route.get('/health', async ({ response }) => {
@@ -34,24 +27,7 @@ Route.group(() => {
     return report.healthy ? response.ok(report) : response.badRequest(report);
   });
 
-  Route.get('/images/:size/:url', async ({ request, response }) => {
-    let { url, size } = request.params();
-    url = decodeURIComponent(url);
-    const { data, headers } = await axios.get(url, {
-      responseType: 'arraybuffer',
-    });
-
-    console.log(headers);
-    const sharpOutput: Buffer = await sharp(data)
-      .resize({ width: parseInt(size) })
-      .webp()
-      .toBuffer();
-
-    response.header('Content-Type', 'image/webp');
-    response.header('Cache-Control', 'public, max-age=604800');
-    return sharpOutput;
-    // return { output: 'data:image/webp;base64,' + sharpOutput.toString('base64') };
-  });
+  Route.get('/images/:size/:url', 'ImageController.resize');
 
   Route.post('/register', 'AuthController.register');
   Route.post('/login', 'AuthController.login');
@@ -61,23 +37,8 @@ Route.group(() => {
 
   Route.get('/podcasts/trending', 'PodcastsController.getTrending');
 
-  Route.put('/cache/:cacheToken', async ({ request, response }) => {
-    const { cacheToken } = request.params();
+  Route.get('/podcasts/:id', 'PodcastsController.getById');
+  Route.get('/podcasts/:id/episodes', 'PodcastsController.getEpisodesByPodcastId');
 
-    if (cacheToken !== Env.get('CACHE_TOKEN')) {
-      return response.badRequest();
-    }
-
-    const statsPromise = PodcastService.stats();
-    const categoriesPromise = PodcastService.categories();
-
-    const [{ stats }, { feeds: categories }] = await Promise.all([statsPromise, categoriesPromise]);
-
-    await CacheService.setJSON('stats', stats);
-
-    const categoriesDto = Dto.fromArray(categories, CategoryDto);
-    await CacheService.setJSON('categories', categoriesDto);
-
-    return response.noContent();
-  });
+  Route.put('/cache/:cacheToken', 'CacheController.bust');
 }).prefix('v1');

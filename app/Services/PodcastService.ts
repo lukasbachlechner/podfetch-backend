@@ -13,7 +13,10 @@ class PodcastService extends PodcastIndexClient {
   }
 
   public trending(qs?: ApiResponse.AnyQueryOptions): Promise<TrendingPodcasts> {
-    return super.raw('/podcasts/trending', qs);
+    const defaults = {
+      lang: 'en',
+    };
+    return super.raw('/podcasts/trending', { ...defaults, ...qs });
   }
 }
 

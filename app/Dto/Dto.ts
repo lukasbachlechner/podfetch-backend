@@ -1,15 +1,16 @@
 import slugify from 'slugify';
 
 export default class Dto {
-  constructor() {}
+  constructor(_item: any) {}
 
   protected toSlug(input: string) {
     return slugify(input, {
       lower: true,
+      remove: /[*+~.()'"!:@]/g,
     });
   }
 
-  public static fromArray(feeds: any[], dto: any) {
-    return feeds.map((feed) => new dto(feed));
+  public static fromArray(items) {
+    return items.map((item) => new this(item));
   }
 }

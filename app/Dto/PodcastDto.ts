@@ -1,6 +1,7 @@
 import CategoryDto from 'App/Dto/CategoryDto';
 import Dto from 'App/Dto/Dto';
 import { PIApiPodcast } from 'podcastdx-client/src/types';
+import EpisodeDto from 'App/Dto/EpisodetDto';
 
 export default class PodcastDto extends Dto {
   public id: number;
@@ -12,9 +13,10 @@ export default class PodcastDto extends Dto {
   public image: string;
   public language: string;
   public categories: CategoryDto[];
+  public episodes: EpisodeDto[] = [];
 
   constructor(podcast: PIApiPodcast) {
-    super();
+    super(podcast);
     this.id = podcast.id;
     this.url = podcast.url;
     this.title = podcast.title;
