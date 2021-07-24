@@ -6,7 +6,7 @@ export default class Dto {
   protected toSlug(input: string) {
     return slugify(input, {
       lower: true,
-      remove: /[*+~.()'"!:@]/g,
+      remove: /[*+~.()'"!:@/,#?]/g,
     });
   }
 

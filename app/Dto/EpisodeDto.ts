@@ -12,6 +12,7 @@ export default class EpisodeDto extends Dto {
   public language: string;
   public podcastId: number;
   public podcastTitle: string;
+  public podcastTitleSlug: string;
   public explicit: boolean;
   public audioUrl: string;
   public audioType: string;
@@ -19,7 +20,6 @@ export default class EpisodeDto extends Dto {
   public audioPrettySize: string;
   public audioDuration: number;
   public datePublished: number;
-  public originalEpisode: PIApiEpisodeDetail;
 
   constructor(episode: PIApiEpisodeDetail) {
     super(episode);
@@ -31,6 +31,7 @@ export default class EpisodeDto extends Dto {
     this.language = episode.feedLanguage;
     this.podcastId = episode.feedId;
     this.podcastTitle = episode.feedTitle;
+    this.podcastTitleSlug = episode.feedTitle && this.toSlug(episode.feedTitle);
     this.explicit = episode.explicit === 1;
     this.audioUrl = episode.enclosureUrl;
     this.audioType = episode.enclosureType;
@@ -38,8 +39,6 @@ export default class EpisodeDto extends Dto {
     this.audioDuration = episode.duration;
     this.audioPrettySize = string.prettyBytes(episode.enclosureLength);
     this.datePublished = episode.datePublished;
-
-    this.originalEpisode = episode;
 
     this.generateExcerpt();
   }

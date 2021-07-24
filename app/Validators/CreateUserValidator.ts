@@ -24,7 +24,7 @@ export default class CreateUserValidator {
    *    ```
    */
   public schema = schema.create({
-    email: schema.string({}, [rules.email()]),
+    email: schema.string({}, [rules.email(), rules.unique({ table: 'users', column: 'email' })]),
     password: schema.string({}, [rules.confirmed('passwordConfirmation')]),
   });
 

@@ -28,6 +28,8 @@
     "@adonisjs/repl": "^3.0.0",
     "axios": "^0.21.1",
     "dotenv": "^10.0.0",
+    "fuse.js": "^6.4.6",
+    "http-proxy": "^1.18.1",
     "luxon": "^1.27.0",
     "pg": "^8.6.0",
     "phc-argon2": "^1.1.1",

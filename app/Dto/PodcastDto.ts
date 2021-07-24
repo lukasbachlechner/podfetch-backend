@@ -1,7 +1,7 @@
 import CategoryDto from 'App/Dto/CategoryDto';
 import Dto from 'App/Dto/Dto';
 import { PIApiPodcast } from 'podcastdx-client/src/types';
-import EpisodeDto from 'App/Dto/EpisodetDto';
+import EpisodeDto from 'App/Dto/EpisodeDto';
 
 export default class PodcastDto extends Dto {
   public id: number;

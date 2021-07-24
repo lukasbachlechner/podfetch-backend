@@ -28,17 +28,28 @@ Route.group(() => {
   });
 
   Route.get('/images/:size/:url', 'ImageController.resize');
+  Route.get('/audio/:url', 'AudioController.proxy');
 
-  Route.post('/register', 'AuthController.register');
-  Route.post('/login', 'AuthController.login');
+  Route.post('/auth/register', 'AuthController.register');
+  Route.post('/auth/login', 'AuthController.login');
+  Route.get('/auth/check-email', 'AuthController.checkEmail');
 
   Route.get('/stats', 'PodcastsController.getStats');
   Route.get('/categories', 'PodcastsController.getCategories');
+
+  Route.get('/search', 'PodcastsController.search');
 
   Route.get('/podcasts/trending', 'PodcastsController.getTrending');
 
   Route.get('/podcasts/:id', 'PodcastsController.getById');
   Route.get('/podcasts/:id/episodes', 'PodcastsController.getEpisodesByPodcastId');
 
+  Route.get('/episodes/:id', 'EpisodesController.getById');
+
   Route.put('/cache/:cacheToken', 'CacheController.bust');
+
+  Route.group(() => {
+    Route.get('/auth/me', 'AuthController.getUser');
+    Route.post('/auth/logout', 'AuthController.logout');
+  }).middleware('auth');
 }).prefix('v1');

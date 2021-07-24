@@ -2,7 +2,8 @@ import PodcastService from 'App/Services/PodcastService';
 import PodcastDto from 'App/Dto/PodcastDto';
 import CacheService from 'App/Services/CacheService';
 import CategoryDto from 'App/Dto/CategoryDto';
-import EpisodeDto from 'App/Dto/EpisodetDto';
+import EpisodeDto from 'App/Dto/EpisodeDto';
+import Fuse from 'fuse.js';
 
 export default class PodcastsController {
   public async getTrending({ request }) {
@@ -64,5 +65,29 @@ export default class PodcastsController {
     const categories = CategoryDto.fromArray(feeds);
     await CacheService.setJSON('categories', categories);
     return categories;
+  }
+
+  public async search({ request }) {
+    const { q: searchTerm } = request.qs();
+    if (!searchTerm.length) {
+      return {
+        podcasts: [],
+        categories: [],
+      };
+    }
+
+    const { feeds } = await PodcastService.search(searchTerm);
+    const allCategories = await this.getCategories();
+
+    const fuse = new Fuse(allCategories, {
+      keys: ['slug'],
+      threshold: 0.2,
+    });
+    const categories = fuse.search(searchTerm).map((category) => category.item);
+
+    return {
+      podcasts: PodcastDto.fromArray(feeds),
+      categories,
+    };
   }
 }
