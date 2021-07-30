@@ -42,14 +42,27 @@ Route.group(() => {
   Route.get('/podcasts/trending', 'PodcastsController.getTrending');
 
   Route.get('/podcasts/:id', 'PodcastsController.getById');
-  Route.get('/podcasts/:id/episodes', 'PodcastsController.getEpisodesByPodcastId');
+  Route.get(
+    '/podcasts/:id/episodes',
+    'PodcastsController.getEpisodesByPodcastId',
+  );
 
   Route.get('/episodes/:id', 'EpisodesController.getById');
 
   Route.put('/cache/:cacheToken', 'CacheController.bust');
 
+  Route.post(
+    '/user/last-playback-time',
+    'PlayedEpisodesController.setLastPlaybackTime',
+  ).middleware('beaconAuth');
+
   Route.group(() => {
     Route.get('/auth/me', 'AuthController.getUser');
     Route.post('/auth/logout', 'AuthController.logout');
+
+    Route.get(
+      '/user/last-playback',
+      'PlayedEpisodesController.getLastPlayback',
+    );
   }).middleware('auth');
 }).prefix('v1');

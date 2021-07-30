@@ -11,7 +11,10 @@ export default class AuthController {
   public async register({ request }) {
     await request.validate(CreateUserValidator);
     const { email, password } = request.all();
-    const user = await User.create({ email, password });
+    const user = await User.create({
+      email,
+      password,
+    });
     return user;
   }
 
@@ -28,7 +31,10 @@ export default class AuthController {
     });
 
     const user = User.findBy('email', email);
-    return { user, ...token };
+    return {
+      user,
+      ...token,
+    };
   }
 
   /**
@@ -38,7 +44,9 @@ export default class AuthController {
   public async checkEmail({ request }) {
     const { email } = request.qs();
     const user = await User.findBy('email', email);
-    return { isTaken: !!user };
+    return {
+      isTaken: !!user,
+    };
   }
 
   /**
@@ -46,7 +54,9 @@ export default class AuthController {
    * @param auth
    */
   public async getUser({ auth }) {
-    return auth.use('api').user!;
+    const { id } = auth.use('api').user!;
+
+    return User.query().where('id', id).preload('playedEpisodes').first();
   }
 
   /**
