@@ -2,6 +2,10 @@ import Dto from 'App/Dto/Dto';
 import { PIApiEpisodeDetail } from 'podcastdx-client/src/types';
 import { string } from '@ioc:Adonis/Core/Helpers';
 
+type EpisodeDetail = PIApiEpisodeDetail & {
+  playbackTime?: number;
+};
+
 export default class EpisodeDto extends Dto {
   public id: number;
   public title: string;
@@ -20,8 +24,9 @@ export default class EpisodeDto extends Dto {
   public audioPrettySize: string;
   public audioDuration: number;
   public datePublished: number;
+  public playbackTime?: number;
 
-  constructor(episode: PIApiEpisodeDetail) {
+  constructor(episode: EpisodeDetail) {
     super(episode);
     this.id = episode.id;
     this.title = episode.title;
@@ -39,6 +44,10 @@ export default class EpisodeDto extends Dto {
     this.audioDuration = episode.duration;
     this.audioPrettySize = string.prettyBytes(episode.enclosureLength);
     this.datePublished = episode.datePublished;
+
+    if (episode.playbackTime) {
+      this.playbackTime = episode.playbackTime;
+    }
 
     this.generateExcerpt();
   }

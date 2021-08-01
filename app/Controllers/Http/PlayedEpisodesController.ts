@@ -34,4 +34,30 @@ export default class PlayedEpisodesController {
 
     return { episode: new EpisodeDto(episode), playbackTime };
   }
+
+  public async getRecentEpisodes({ auth }) {
+    const playedEpisodes = await PlayedEpisode.query()
+      .where('userId', auth.user!.id)
+      .orderBy('updatedAt', 'desc')
+      .limit(6);
+
+    const promisedRecentEpisodes = playedEpisodes.map((episode) => {
+      return PodcastService.episodeById(parseInt(episode.episodeId));
+    });
+
+    const episodeResults = await Promise.all(promisedRecentEpisodes);
+
+    const episodes = episodeResults.map((episodeResult) => {
+      const currentPlayedEpisode = playedEpisodes.find(
+        (episode) => parseInt(episode.episodeId) === episodeResult.episode.id,
+      );
+
+      return {
+        ...episodeResult.episode,
+        playbackTime: currentPlayedEpisode!.playbackTime,
+      };
+    });
+
+    return EpisodeDto.fromArray(episodes);
+  }
 }

@@ -30,9 +30,8 @@ export default class AuthController {
       expiresIn: rememberMe ? null : '7days',
     });
 
-    const user = User.findBy('email', email);
     return {
-      user,
+      user: auth.user!,
       ...token,
     };
   }
@@ -54,9 +53,7 @@ export default class AuthController {
    * @param auth
    */
   public async getUser({ auth }) {
-    const { id } = auth.use('api').user!;
-
-    return User.query().where('id', id).preload('playedEpisodes').first();
+    return auth.user!;
   }
 
   /**

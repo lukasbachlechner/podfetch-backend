@@ -64,5 +64,10 @@ Route.group(() => {
       '/user/last-playback',
       'PlayedEpisodesController.getLastPlayback',
     );
+
+    Route.get(
+      '/user/recent-episodes',
+      'PlayedEpisodesController.getRecentEpisodes',
+    );
   }).middleware('auth');
 }).prefix('v1');
