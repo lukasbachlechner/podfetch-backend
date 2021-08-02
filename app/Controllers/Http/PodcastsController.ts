@@ -4,6 +4,7 @@ import CacheService from 'App/Services/CacheService';
 import CategoryDto from 'App/Dto/CategoryDto';
 import EpisodeDto from 'App/Dto/EpisodeDto';
 import Fuse from 'fuse.js';
+import SubscribedPodcast from 'App/Models/SubscribedPodcast';
 
 export default class PodcastsController {
   public async getTrending({ request }) {
@@ -30,7 +31,9 @@ export default class PodcastsController {
     perPage = parseInt(perPage);
 
     if (page !== 1) {
-      const { items } = await PodcastService.episodesByFeedId(id, { max: 1000 });
+      const { items } = await PodcastService.episodesByFeedId(id, {
+        max: 1000,
+      });
       const episodes = EpisodeDto.fromArray(items);
 
       const startIndex = (page - 1) * perPage;
@@ -89,5 +92,41 @@ export default class PodcastsController {
       podcasts: PodcastDto.fromArray(feeds),
       categories,
     };
+  }
+
+  public async getPersonalized({ request, auth }) {
+    const { max } = request.qs();
+    const preferences = await auth.user!.categoryPreferences.join(',');
+    const { feeds } = await PodcastService.trending({
+      cat: preferences,
+      max,
+    });
+
+    return PodcastDto.fromArray(feeds);
+  }
+
+  public async getSubscribed({ auth }) {
+    const subscriptions = await SubscribedPodcast.query()
+      .where('userId', auth.user!.id)
+      .orderBy('updatedAt', 'desc');
+    const promisedSubscribedPodcasts = subscriptions.map((subscription) => {
+      return PodcastService.podcastById(parseInt(subscription.podcastId));
+    });
+
+    const allPodcasts = await Promise.all(promisedSubscribedPodcasts);
+
+    const podcastFeeds = allPodcasts.map(({ feed }) => feed);
+
+    return PodcastDto.fromArray(podcastFeeds);
+  }
+
+  public async getByCategory({ request }) {
+    const { categorySlug } = request.params();
+    const { feeds } = await PodcastService.trending({
+      cat: categorySlug,
+      max: 48,
+    });
+
+    return PodcastDto.fromArray(feeds);
   }
 }

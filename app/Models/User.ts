@@ -8,6 +8,7 @@ import {
   HasMany,
 } from '@ioc:Adonis/Lucid/Orm';
 import PlayedEpisode from 'App/Models/PlayedEpisode';
+import SubscribedPodcast from 'App/Models/SubscribedPodcast';
 
 export default class User extends BaseModel {
   @column({ isPrimary: true })
@@ -22,6 +23,12 @@ export default class User extends BaseModel {
   @column()
   public rememberMeToken?: string;
 
+  @column({
+    prepare: (value: string[]) => value.join(','),
+    consume: (value: string) => value.split(',').map((id) => parseInt(id)),
+  })
+  public categoryPreferences: string;
+
   @column.dateTime({ autoCreate: true })
   public createdAt: DateTime;
 
@@ -30,6 +37,9 @@ export default class User extends BaseModel {
 
   @hasMany(() => PlayedEpisode)
   public playedEpisodes: HasMany<typeof PlayedEpisode>;
+
+  @hasMany(() => SubscribedPodcast)
+  public subscribedPodcasts: HasMany<typeof SubscribedPodcast>;
 
   @beforeSave()
   public static async hashPassword(user: User) {

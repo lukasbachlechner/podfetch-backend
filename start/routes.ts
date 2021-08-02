@@ -40,6 +40,10 @@ Route.group(() => {
   Route.get('/search', 'PodcastsController.search');
 
   Route.get('/podcasts/trending', 'PodcastsController.getTrending');
+  Route.get(
+    '/podcasts/category/:categorySlug',
+    'PodcastsController.getByCategory',
+  );
 
   Route.get('/podcasts/:id', 'PodcastsController.getById');
   Route.get(
@@ -68,6 +72,19 @@ Route.group(() => {
     Route.get(
       '/user/recent-episodes',
       'PlayedEpisodesController.getRecentEpisodes',
+    );
+
+    Route.get('user/personalized', 'PodcastsController.getPersonalized');
+    Route.get('user/subscribed', 'PodcastsController.getSubscribed');
+
+    Route.get('subscriptions', 'SubscribedPodcastsController.index');
+    Route.post(
+      'subscriptions/subscribe',
+      'SubscribedPodcastsController.subscribe',
+    );
+    Route.delete(
+      'subscriptions/unsubscribe',
+      'SubscribedPodcastsController.unsubscribe',
     );
   }).middleware('auth');
 }).prefix('v1');

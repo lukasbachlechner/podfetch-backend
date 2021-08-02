@@ -12,11 +12,18 @@ class PodcastService extends PodcastIndexClient {
     });
   }
 
-  public trending(qs?: ApiResponse.AnyQueryOptions): Promise<TrendingPodcasts> {
+  public raw<T>(
+    endpoint: string,
+    qs?: ApiResponse.AnyQueryOptions,
+  ): Promise<T> {
     const defaults = {
       lang: 'en',
     };
-    return super.raw('/podcasts/trending', { ...defaults, ...qs });
+    return super.raw(endpoint, { ...defaults, ...qs });
+  }
+
+  public trending(qs?: ApiResponse.AnyQueryOptions): Promise<TrendingPodcasts> {
+    return this.raw('/podcasts/trending', qs);
   }
 }
 

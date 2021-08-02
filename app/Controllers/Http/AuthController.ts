@@ -10,11 +10,14 @@ export default class AuthController {
    */
   public async register({ request }) {
     await request.validate(CreateUserValidator);
-    const { email, password } = request.all();
+    const { email, password, categoryPreferences } = request.all();
+
     const user = await User.create({
       email,
       password,
+      categoryPreferences,
     });
+
     return user;
   }
 
@@ -24,10 +27,10 @@ export default class AuthController {
    * @param auth
    */
   public async login({ request, auth }) {
-    const { email, password, rememberMe } = request.all();
+    const { email, password } = request.all();
 
     const token = await auth.use('api').attempt(email, password, {
-      expiresIn: rememberMe ? null : '7days',
+      expiresIn: '7days',
     });
 
     return {
@@ -53,6 +56,9 @@ export default class AuthController {
    * @param auth
    */
   public async getUser({ auth }) {
+    const user = auth.user!;
+    await user.load('playedEpisodes');
+    await user.load('subscribedPodcasts');
     return auth.user!;
   }
 

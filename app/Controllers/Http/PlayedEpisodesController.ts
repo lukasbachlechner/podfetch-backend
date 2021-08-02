@@ -24,15 +24,21 @@ export default class PlayedEpisodesController {
     return response.noContent();
   }
 
-  public async getLastPlayback({ auth }) {
-    const { episodeId, playbackTime } = await PlayedEpisode.query()
+  public async getLastPlayback({ response, auth }) {
+    const lastPlayedEpisode = await PlayedEpisode.query()
       .where('userId', auth.user!.id)
       .orderBy('updatedAt', 'desc')
-      .firstOrFail();
+      .first();
 
-    const { episode } = await PodcastService.episodeById(parseInt(episodeId));
+    if (lastPlayedEpisode) {
+      const { episodeId, playbackTime } = lastPlayedEpisode;
 
-    return { episode: new EpisodeDto(episode), playbackTime };
+      const { episode } = await PodcastService.episodeById(parseInt(episodeId));
+
+      return { episode: new EpisodeDto(episode), playbackTime };
+    }
+
+    return response.noContent();
   }
 
   public async getRecentEpisodes({ auth }) {
