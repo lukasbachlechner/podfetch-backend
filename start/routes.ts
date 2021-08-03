@@ -76,6 +76,7 @@ Route.group(() => {
 
     Route.get('user/personalized', 'PodcastsController.getPersonalized');
     Route.get('user/subscribed', 'PodcastsController.getSubscribed');
+    Route.get('user/liked', 'EpisodesController.getLiked');
 
     Route.get('subscriptions', 'SubscribedPodcastsController.index');
     Route.post(
@@ -86,5 +87,9 @@ Route.group(() => {
       'subscriptions/unsubscribe',
       'SubscribedPodcastsController.unsubscribe',
     );
+
+    Route.get('likes', 'LikedEpisodesController.index');
+    Route.post('likes/like', 'LikedEpisodesController.like');
+    Route.delete('likes/unlike', 'LikedEpisodesController.unlike');
   }).middleware('auth');
 }).prefix('v1');

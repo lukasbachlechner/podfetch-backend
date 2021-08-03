@@ -72,6 +72,7 @@ export default class PodcastsController {
 
   public async search({ request }) {
     const { q: searchTerm } = request.qs();
+    console.log(searchTerm);
     if (!searchTerm.length) {
       return {
         podcasts: [],
@@ -121,7 +122,8 @@ export default class PodcastsController {
   }
 
   public async getByCategory({ request }) {
-    const { categorySlug } = request.params();
+    let { categorySlug } = request.params();
+    categorySlug = categorySlug.replace('-', '+');
     const { feeds } = await PodcastService.trending({
       cat: categorySlug,
       max: 48,

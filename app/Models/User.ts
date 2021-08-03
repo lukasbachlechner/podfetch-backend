@@ -9,6 +9,7 @@ import {
 } from '@ioc:Adonis/Lucid/Orm';
 import PlayedEpisode from 'App/Models/PlayedEpisode';
 import SubscribedPodcast from 'App/Models/SubscribedPodcast';
+import LikedEpisode from 'App/Models/LikedEpisode';
 
 export default class User extends BaseModel {
   @column({ isPrimary: true })
@@ -40,6 +41,9 @@ export default class User extends BaseModel {
 
   @hasMany(() => SubscribedPodcast)
   public subscribedPodcasts: HasMany<typeof SubscribedPodcast>;
+
+  @hasMany(() => LikedEpisode)
+  public likedEpisodes: HasMany<typeof LikedEpisode>;
 
   @beforeSave()
   public static async hashPassword(user: User) {

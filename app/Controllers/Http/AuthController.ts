@@ -33,8 +33,13 @@ export default class AuthController {
       expiresIn: '7days',
     });
 
+    const user = auth.user!;
+    await user.load('playedEpisodes');
+    await user.load('subscribedPodcasts');
+    await user.load('likedEpisodes');
+
     return {
-      user: auth.user!,
+      user,
       ...token,
     };
   }
@@ -59,6 +64,7 @@ export default class AuthController {
     const user = auth.user!;
     await user.load('playedEpisodes');
     await user.load('subscribedPodcasts');
+    await user.load('likedEpisodes');
     return auth.user!;
   }
 
