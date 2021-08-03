@@ -25,7 +25,7 @@ export default class User extends BaseModel {
 
   @column({
     prepare: (value: string[]) => value.join(','),
-    consume: (value: string) => value.split(',').map((id) => parseInt(id)),
+    consume: (value: string) => value?.split(',').map((id) => parseInt(id)),
   })
   public categoryPreferences: string;
 
