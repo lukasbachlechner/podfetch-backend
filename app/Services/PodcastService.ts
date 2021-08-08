@@ -12,6 +12,11 @@ class PodcastService extends PodcastIndexClient {
     });
   }
 
+  /**
+   * Overwrite the super.raw method to include a default language.
+   * @param endpoint
+   * @param qs
+   */
   public raw<T>(
     endpoint: string,
     qs?: ApiResponse.AnyQueryOptions,

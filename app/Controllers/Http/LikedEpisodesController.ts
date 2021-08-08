@@ -1,6 +1,11 @@
 import LikedEpisode from 'App/Models/LikedEpisode';
 
 export default class LikedEpisodesController {
+  /**
+   * Like an episode.
+   * @param request
+   * @param auth
+   */
   public async like({ request, auth }) {
     const { episodeId } = request.all();
     const payload = {
@@ -10,6 +15,11 @@ export default class LikedEpisodesController {
     return await LikedEpisode.firstOrCreate(payload, payload);
   }
 
+  /**
+   * Unlike an episode.
+   * @param request
+   * @param auth
+   */
   public async unlike({ request, auth }) {
     const { episodeId } = request.all();
     const like = await LikedEpisode.query()
@@ -24,6 +34,10 @@ export default class LikedEpisodesController {
     return null;
   }
 
+  /**
+   * List all liked episodes.
+   * @param auth
+   */
   public async index({ auth }) {
     return LikedEpisode.query().where('userId', auth.user!.id);
   }

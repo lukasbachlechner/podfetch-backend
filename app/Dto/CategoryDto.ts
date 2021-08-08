@@ -14,6 +14,10 @@ export default class CategoryDto extends Dto {
     this.slug = this.toSlug(category.name);
   }
 
+  /**
+   * Transform categories from the API into proper objects.
+   * @param categories
+   */
   public static fromDirtyCategories(categories: DirtyCategories) {
     const cleanCategories: CategoryDto[] = [];
     for (const key in categories) {

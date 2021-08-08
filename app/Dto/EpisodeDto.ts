@@ -52,6 +52,10 @@ export default class EpisodeDto extends Dto {
     this.generateExcerpt();
   }
 
+  /**
+   * Generate an excerpt based on the episode description.
+   * @private
+   */
   private generateExcerpt(): void {
     let cleanExcerpt = string.excerpt(this.description, 240);
     cleanExcerpt = string.condenseWhitespace(cleanExcerpt);

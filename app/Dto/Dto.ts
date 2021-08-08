@@ -1,8 +1,17 @@
 import slugify from 'slugify';
 
 export default class Dto {
+  /**
+   * Empty constructor, otherwise new this() wouldn't work.
+   * @param _item
+   */
   constructor(_item: any) {}
 
+  /**
+   * Slugify any given input.
+   * @param input
+   * @protected
+   */
   protected toSlug(input: string) {
     return slugify(input, {
       lower: true,
@@ -10,6 +19,10 @@ export default class Dto {
     });
   }
 
+  /**
+   * Create corresponding Dtos from a derived class (e. g. PodcastDto.fromArray).
+   * @param items
+   */
   public static fromArray(items) {
     return items.map((item) => new this(item));
   }

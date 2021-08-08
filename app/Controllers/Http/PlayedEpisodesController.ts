@@ -24,6 +24,11 @@ export default class PlayedEpisodesController {
     return response.noContent();
   }
 
+  /**
+   * Get last playback for a logged in user.
+   * @param response
+   * @param auth
+   */
   public async getLastPlayback({ response, auth }) {
     const lastPlayedEpisode = await PlayedEpisode.query()
       .where('userId', auth.user!.id)
@@ -41,6 +46,10 @@ export default class PlayedEpisodesController {
     return response.noContent();
   }
 
+  /**
+   * Get the 6 most recent episodes for a logged in user.
+   * @param auth
+   */
   public async getRecentEpisodes({ auth }) {
     const playedEpisodes = await PlayedEpisode.query()
       .where('userId', auth.user!.id)

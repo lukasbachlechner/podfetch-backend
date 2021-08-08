@@ -7,11 +7,19 @@ import Fuse from 'fuse.js';
 import SubscribedPodcast from 'App/Models/SubscribedPodcast';
 
 export default class PodcastsController {
+  /**
+   * Get trending podcasts.
+   * @param request
+   */
   public async getTrending({ request }) {
     const { feeds } = await PodcastService.trending(request.qs());
     return PodcastDto.fromArray(feeds);
   }
 
+  /**
+   * Get a single podcast by Id.
+   * @param request
+   */
   public async getById({ request }) {
     const { id } = request.params();
     const [{ feed }, { items }] = await Promise.all([
@@ -23,6 +31,10 @@ export default class PodcastsController {
     return podcast;
   }
 
+  /**
+   * Get all episodes that belong to a podcast.
+   * @param request
+   */
   public async getEpisodesByPodcastId({ request }) {
     const { id } = request.params();
     let { page = '1', per_page: perPage = '10' } = request.qs();
@@ -31,6 +43,7 @@ export default class PodcastsController {
     perPage = parseInt(perPage);
 
     if (page !== 1) {
+      // get all available episodes and paginate them here - sorry! :D
       const { items } = await PodcastService.episodesByFeedId(id, {
         max: 1000,
       });
@@ -47,6 +60,9 @@ export default class PodcastsController {
     return EpisodeDto.fromArray(items);
   }
 
+  /**
+   * Get the stats.
+   */
   public async getStats() {
     const cachedStats = await CacheService.getJSON('stats');
     if (cachedStats) {
@@ -58,6 +74,9 @@ export default class PodcastsController {
     return stats;
   }
 
+  /**
+   * Get all categories.
+   */
   public async getCategories() {
     const cachedCategories = await CacheService.getJSON('categories');
     if (cachedCategories) {
@@ -70,9 +89,12 @@ export default class PodcastsController {
     return categories;
   }
 
+  /**
+   * Search for a given term in all podcasts as well as all categories in Redis.
+   * @param request
+   */
   public async search({ request }) {
     const { q: searchTerm } = request.qs();
-    console.log(searchTerm);
     if (!searchTerm.length) {
       return {
         podcasts: [],
@@ -83,6 +105,7 @@ export default class PodcastsController {
     const { feeds } = await PodcastService.search(searchTerm);
     const allCategories = await this.getCategories();
 
+    // fuzzy search
     const fuse = new Fuse(allCategories, {
       keys: ['slug'],
       threshold: 0.2,
@@ -95,6 +118,11 @@ export default class PodcastsController {
     };
   }
 
+  /**
+   * Get podcasts based on the chosen categories on signup.
+   * @param request
+   * @param auth
+   */
   public async getPersonalized({ request, auth }) {
     const { max } = request.qs();
     const preferences = await auth.user!.categoryPreferences.join(',');
@@ -106,6 +134,10 @@ export default class PodcastsController {
     return PodcastDto.fromArray(feeds);
   }
 
+  /**
+   * Get all episodes that the user has subscribed.
+   * @param auth
+   */
   public async getSubscribed({ auth }) {
     const subscriptions = await SubscribedPodcast.query()
       .where('userId', auth.user!.id)
@@ -121,9 +153,14 @@ export default class PodcastsController {
     return PodcastDto.fromArray(podcastFeeds);
   }
 
+  /**
+   * Get all podcasts in a given category.
+   * @param request
+   */
   public async getByCategory({ request }) {
     let { categorySlug } = request.params();
     categorySlug = categorySlug.replace('-', '+');
+    // we could somehow paginate here
     const { feeds } = await PodcastService.trending({
       cat: categorySlug,
       max: 48,
