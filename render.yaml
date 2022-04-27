@@ -41,4 +41,5 @@ services:
 
 databases: # Render PostgreSQL managed database
   - name: podfetch-postgres
+    region: frankfurt
     ipAllowList: [] # only allow internal connections
