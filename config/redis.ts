@@ -11,7 +11,7 @@ import { RedisConfig, RedisConnectionConfig } from '@ioc:Adonis/Addons/Redis';
 import Url from 'url-parse';
 import Application from '@ioc:Adonis/Core/Application';
 
-const REDIS_URL = new Url(Env.get('REDIS_URL'));
+// const REDIS_URL = new Url(Env.get('REDIS_URL'));
 
 const devRedisConfig: RedisConnectionConfig = {
   host: Env.get('REDIS_HOST'),
