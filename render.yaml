@@ -4,8 +4,10 @@
 services:
   - type: web # valid values: https://render.com/docs/yaml-spec#type
     name: podfetch-backend
-    env: docker # valid values: https://render.com/docs/yaml-spec#environment
-    dockerfilePath: Dockerfile.render
+    env: node
+    region: frankfurt
+    buildCommand: yarn && node ace build --production
+    startCommand: cd build && node server.js
     plan: starter # optional; defaults to starter
     numInstances: 1
     domains: # custom domains
@@ -19,27 +21,24 @@ services:
         value: local
       - key: DATABASE_URL # Render managed PostgreSQL database
         fromDatabase:
-          name: postgresql-tapered-12739
+          name: podfetch-postgres
           property: connectionString
-      - key: REDIS_HOST # Render private service
+      - key: REDIS_HOST
         fromService:
-          name: redis-tetrahedral-25247
-          type: pserv
-          property: host
+          type: redis
+          name: podcache
+          property: host # available properties are listed below
       - key: REDIS_PORT
         fromService:
-          name: redis-tetrahedral-25247
-          type: pserv
+          type: redis
+          name: podcache
           property: port
-  - type: pserv # Redis private service
-    name: redis-tetrahedral-25247
-    env: docker
-    repo: https://github.com/render-examples/redis.git
-    disk:
-      name: redis-tetrahedral-25247-data
-      mountPath: /var/lib/redis
-      sizeGB: 10 # optional
+  - type: redis
+    name: podcache
+    ipAllowList: [] # only allow internal connections
+    plan: free
+    region: frankfurt
 
 databases: # Render PostgreSQL managed database
-  - name: postgresql-tapered-12739
+  - name: podfetch-postgres
     ipAllowList: [] # only allow internal connections
