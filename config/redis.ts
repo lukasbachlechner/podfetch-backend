@@ -23,9 +23,9 @@ const devRedisConfig: RedisConnectionConfig = {
 };
 
 const prodRedisConfig: RedisConnectionConfig = {
-  host: REDIS_URL.hostname as string,
-  port: REDIS_URL.port as number,
-  password: REDIS_URL.password as string,
+  host: Env.get('REDIS_HOST'),
+  port: Env.get('REDIS_PORT'),
+  password: Env.get('REDIS_PASSWORD', ''),
   db: 0,
   keyPrefix: '',
   healthCheck: true,
