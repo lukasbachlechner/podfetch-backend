@@ -52,7 +52,7 @@ export default class PodcastsController {
 
       const startIndex = (page - 1) * perPage;
       const endIndex = page * perPage;
-      const hasMore = endIndex + perPage + 1 < episodes.length;
+      const hasMore = endIndex < episodes.length;
 
       return { episodes: episodes.slice(startIndex, endIndex), hasMore };
     }
