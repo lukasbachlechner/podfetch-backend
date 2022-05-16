@@ -21,10 +21,10 @@ export default class PodcastsController {
    * @param request
    */
   public async getById({ request }) {
-    const { id } = request.params();
+    const { id, maxEpisodes = 10 } = request.params();
     const [{ feed }, { items }] = await Promise.all([
       PodcastService.podcastById(id),
-      PodcastService.episodesByFeedId(id, { max: 10 }),
+      PodcastService.episodesByFeedId(id, { max: maxEpisodes }),
     ]);
     const podcast = new PodcastDto(feed);
     podcast.episodes = EpisodeDto.fromArray(items);
