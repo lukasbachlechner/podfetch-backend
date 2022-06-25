@@ -5,7 +5,10 @@
   "scripts": {
     "build": "node ace build --production",
     "start": "node server.js",
-    "dev": "node ace serve --watch"
+    "dev": "node ace serve --watch",
+    "dockerAttach": "docker exec -it adonis_app /bin/sh",
+    "dockerAttachRedis": "docker exec -it redis /bin/sh",
+    "dockerAttachPostgres": "docker exec -it postgres /bin/sh"
   },
   "devDependencies": {
     "@adonisjs/assembler": "^5.0.0",
@@ -28,6 +31,7 @@
     "@adonisjs/redis": "^7.0.6",
     "@adonisjs/repl": "^3.0.0",
     "axios": "^0.21.1",
+    "crypto": "^1.0.1",
     "dotenv": "^10.0.0",
     "fuse.js": "^6.4.6",
     "http-proxy": "^1.18.1",
@@ -38,6 +42,7 @@
     "proxy-addr": "^2.0.7",
     "reflect-metadata": "^0.1.13",
     "sharp": "^0.28.3",
+    "socket.io": "^4.5.1",
     "source-map-support": "^0.5.19",
     "url-parse": "^1.5.1"
   }

@@ -12,7 +12,10 @@ export default class Dto {
    * @param input
    * @protected
    */
-  protected toSlug(input: string) {
+  protected toSlug(input: any) {
+    if (typeof input !== 'string') {
+      return input;
+    }
     return slugify(input, {
       lower: true,
       remove: /[*+~.()'"!:@/,#?]/g,

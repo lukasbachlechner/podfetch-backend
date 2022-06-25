@@ -1,5 +1,5 @@
-import PodcastIndexClient from 'podcastdx-client';
 import Env from '@ioc:Adonis/Core/Env';
+import PodcastIndexClient = require('podcastdx-client');
 import { ApiResponse } from 'podcastdx-client/src/types';
 import { TrendingPodcasts } from '../../types';
 

@@ -6,7 +6,7 @@ services:
     name: podfetch-backend
     env: node
     region: frankfurt
-    buildCommand: yarn && node ace build --production --ignore-ts-errors
+    buildCommand: yarn && node ace build --production --ignore-ts-errors && node ace migration:run --force
     startCommand: cd build && node server.js
     plan: starter # optional; defaults to starter
     numInstances: 1

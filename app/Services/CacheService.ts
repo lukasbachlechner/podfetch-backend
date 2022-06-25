@@ -1,5 +1,5 @@
-import { string } from '@ioc:Adonis/Core/Helpers';
 import Redis from '@ioc:Adonis/Addons/Redis';
+import { string } from '@ioc:Adonis/Core/Helpers';
 
 export default class CacheService {
   public static async getJSON(key: string) {
@@ -9,7 +9,7 @@ export default class CacheService {
 
   public static async setJSON(key: string, value: any, ttl?: string) {
     if (ttl) {
-      await Redis.set(key, JSON.stringify(value), 'px', string.toMs(ttl));
+      await Redis.set(key, JSON.stringify(value), 'PX', string.toMs(ttl));
     } else {
       await Redis.set(key, JSON.stringify(value));
     }
