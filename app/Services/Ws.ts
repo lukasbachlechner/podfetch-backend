@@ -30,10 +30,6 @@ class Ws {
         origin: '*',
       },
     });
-    this.io.use((socket, next) => {
-      console.log(socket.handshake.headers['user-agent']);
-      next();
-    });
     this.io.use(async (socket: PfSocket, next) => {
       const wsAuthService = new WsAuthService();
       const authUser = await wsAuthService.connection(socket);

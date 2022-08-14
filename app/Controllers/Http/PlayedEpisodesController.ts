@@ -42,8 +42,28 @@ export default class PlayedEpisodesController {
 
       return { episode: new EpisodeDto(episode), playbackTime };
     }
-
     return response.noContent();
+  }
+
+  /**
+   * Get last playback for a logged in user.
+   * @param response
+   * @param auth
+   */
+  public async getLastPlaybackNoEmptyResponse({ auth }) {
+    const lastPlayedEpisode = await PlayedEpisode.query()
+      .where('userId', auth.user!.id)
+      .orderBy('updatedAt', 'desc')
+      .first();
+
+    if (lastPlayedEpisode) {
+      const { episodeId, playbackTime } = lastPlayedEpisode;
+
+      const { episode } = await PodcastService.episodeById(parseInt(episodeId));
+
+      return { episode: new EpisodeDto(episode), playbackTime };
+    }
+    return {};
   }
 
   /**

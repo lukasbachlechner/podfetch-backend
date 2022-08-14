@@ -70,6 +70,11 @@ Route.group(() => {
     );
 
     Route.get(
+      '/user/last-playback-no-empty',
+      'PlayedEpisodesController.getLastPlaybackNoEmptyResponse',
+    );
+
+    Route.get(
       '/user/recent-episodes',
       'PlayedEpisodesController.getRecentEpisodes',
     );

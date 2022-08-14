@@ -1,18 +1,24 @@
 import PodcastService from 'App/Services/PodcastService';
 import EpisodeDto from 'App/Dto/EpisodeDto';
 import LikedEpisode from 'App/Models/LikedEpisode';
+import PlaybackTimeAdderService from 'App/Services/PlaybackTimeAdderService';
 
 export default class EpisodesController {
   /**
    * Get a single episode by Id.
    * @param request
    */
-  public async getById({ request }) {
+  public async getById({ request, auth }) {
     const { id } = request.params();
     const { episode } = await PodcastService.episodeById(id, {
       fulltext: true,
     });
-    return new EpisodeDto(episode);
+    const enhancedItem =
+      await PlaybackTimeAdderService.addPlaybackTimeToSingleEpisodes(
+        episode,
+        auth,
+      );
+    return new EpisodeDto(enhancedItem);
   }
 
   /**
@@ -31,7 +37,12 @@ export default class EpisodesController {
     const allEpisodes = await Promise.all(promisedLikedEpisodes);
 
     const episodeItems = allEpisodes.map(({ episode }) => episode);
+    const enhancedItems =
+      await PlaybackTimeAdderService.addPlaybackTimeToMultipleEpisodes(
+        episodeItems,
+        auth,
+      );
 
-    return EpisodeDto.fromArray(episodeItems);
+    return EpisodeDto.fromArray(enhancedItems);
   }
 }

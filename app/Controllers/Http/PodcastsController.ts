@@ -5,6 +5,7 @@ import CategoryDto from 'App/Dto/CategoryDto';
 import EpisodeDto from 'App/Dto/EpisodeDto';
 import Fuse from 'fuse.js';
 import SubscribedPodcast from 'App/Models/SubscribedPodcast';
+import PlaybackTimeAdderService from 'App/Services/PlaybackTimeAdderService';
 
 export default class PodcastsController {
   /**
@@ -12,15 +13,23 @@ export default class PodcastsController {
    * @param request
    */
   public async getTrending({ request }) {
+    const cacheKey = request.url(true);
+    const cached = await CacheService.getJSON(cacheKey);
+
+    if (cached) {
+      return cached;
+    }
     const { feeds } = await PodcastService.trending(request.qs());
-    return PodcastDto.fromArray(feeds);
+    const response = PodcastDto.fromArray(feeds);
+    CacheService.setJSON(cacheKey, response, '1h');
+    return response;
   }
 
   /**
    * Get a single podcast by Id.
    * @param request
    */
-  public async getById({ request }) {
+  public async getById({ request, auth }) {
     const { id } = request.params();
     const { maxEpisodes = 10 } = request.qs();
     const [{ feed }, { items }] = await Promise.all([
@@ -28,7 +37,12 @@ export default class PodcastsController {
       PodcastService.episodesByFeedId(id, { max: maxEpisodes }),
     ]);
     const podcast = new PodcastDto(feed);
-    podcast.episodes = EpisodeDto.fromArray(items);
+    const enhancedItems =
+      await PlaybackTimeAdderService.addPlaybackTimeToMultipleEpisodes(
+        items,
+        auth,
+      );
+    podcast.episodes = EpisodeDto.fromArray(enhancedItems);
     return podcast;
   }
 
@@ -36,7 +50,7 @@ export default class PodcastsController {
    * Get all episodes that belong to a podcast.
    * @param request
    */
-  public async getEpisodesByPodcastId({ request }) {
+  public async getEpisodesByPodcastId({ request, auth }) {
     const { id } = request.params();
     let { page = '1', per_page: perPage = '10' } = request.qs();
 
@@ -48,7 +62,12 @@ export default class PodcastsController {
       const { items } = await PodcastService.episodesByFeedId(id, {
         max: 1000,
       });
-      const episodes = EpisodeDto.fromArray(items);
+      const enhancedItems =
+        await PlaybackTimeAdderService.addPlaybackTimeToMultipleEpisodes(
+          items,
+          auth,
+        );
+      const episodes = EpisodeDto.fromArray(enhancedItems);
 
       const startIndex = (page - 1) * perPage;
       const endIndex = page * perPage;
@@ -57,8 +76,17 @@ export default class PodcastsController {
       return { episodes: episodes.slice(startIndex, endIndex), hasMore };
     }
 
-    const { items } = await PodcastService.episodesByFeedId(id, { max: 10 });
-    return EpisodeDto.fromArray(items);
+    const { items } = await PodcastService.episodesByFeedId(id, {
+      max: perPage,
+    });
+
+    const enhancedItems =
+      await PlaybackTimeAdderService.addPlaybackTimeToMultipleEpisodes(
+        items,
+        auth,
+      );
+
+    return EpisodeDto.fromArray(enhancedItems);
   }
 
   /**
